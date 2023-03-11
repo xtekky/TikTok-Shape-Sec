@@ -16,9 +16,10 @@ while True:
     client     = Session(client_identifier='chrome_111')
     # client.proxies = {
     #     'http'  : 'http://',
-    #     'https' : 'http://'
+    #     'https' : 'http://
     # }
 
+    aweme_id   = 7208840206655442182
     sessionid  = ''
 
     client.headers = {
@@ -37,6 +38,7 @@ while True:
         "accept-encoding"   : "application/json",
         "accept-language"   : "en-GB,en-US;q=0.9,en;q=0.8",
     }
+    
     client.cookies['sessionid'] = sessionid
 
     init      = client.get('https://www.tiktok.com')
@@ -62,23 +64,22 @@ while True:
     print(resp.text.encode())
 
     print(client.cookies.get_dict()["msToken"])
+    # MsToken(client).send_report()
+    # print(client.cookies.get_dict()["msToken"])
 
-    def get_shape(url):
+    def get_shape(url, cookies):
         resp = post('http://localhost:1337/shape', json = {
-            'url': url
+            'url': url,
+            'cookies': cookies,
         })
 
         return resp.json()['shape_sec']
-
-    sleep(2)
-
-
 
     params = Signer.sign(urlencode({
         "aid": "1988",
         "app_language": "en",
         "app_name": "tiktok_web",
-        "aweme_id": 7205987592741932294,
+        "aweme_id": aweme_id,
         "battery_info": "0.73",
         "browser_language": "en",
         "browser_name": "Mozilla",
@@ -107,14 +108,9 @@ while True:
 
     url = f'https://m.tiktok.com/api/commit/item/digg/?{params}'
     
-    # 'htc6j8njvn-a',
-    # 'htc6j8njvn-b',
-    # 'htc6j8njvn-c',
-    # 'htc6j8njvn-d',
-    # 'htc6j8njvn-z',
-    # 'htc6j8njvn-f',
+    cookies = ''.join("; ".join([str(x)+"="+str(y) for x,y in client.cookies.get_dict().items()]))
 
-    headers = get_shape(url) | {
+    headers = get_shape(url, cookies) | {
         'authority': 'm.tiktok.com',
         'accept': '*/*',
         'accept-language': 'en,fr-FR;q=0.9,fr;q=0.8,es-ES;q=0.7,es;q=0.6,en-US;q=0.5,am;q=0.4,de;q=0.3',
